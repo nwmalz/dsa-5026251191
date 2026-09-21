@@ -1,10 +1,10 @@
+package lw01.prelab;
+
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileNotFoundException;
 
 public class Main {
     public static void main(String[] args) {
-        try (Scanner ngeprint = new Scanner(new File("C:\\Users\\Zephyrus\\Downloads\\ASD PRAKTIKUM\\dsa-5026251191\\lw01\\prelab\\jobs.txt"))) {
+        Scanner ngeprint = new Scanner(Main.class.getResourceAsStream("jobs.txt"));
         
             PrintJob[] kerjaan = new PrintJob[100];
 
@@ -27,11 +27,7 @@ public class Main {
                 System.out.println(kerjaan[i].summary());
             }    
         
-        } catch(FileNotFoundException e) {
-            System.out.println("yahahai eror");
-        } catch(IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        ngeprint.close();
     }
     
     
