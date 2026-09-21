@@ -15,7 +15,7 @@ public class Main {
             String type = ngerental.next();
             String id = ngerental.next();
             int days = ngerental.nextInt();
-            int units = ngerental.nextInt();
+            unit[i] = ngerental.nextInt();
 
             if (type.equals("LAPTOP")) {
                 rentalan[i] = new LaptopRental(id, days);
