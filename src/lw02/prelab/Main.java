@@ -7,60 +7,64 @@ import java.util.Stack;
 
 public class Main {
     public static void main(String[] args) {
+        LinkedList<String[]> transactions = new LinkedList<>();
+        LinkedList<String[]> customerRecords = new LinkedList<>();
+
+        Queue<String[]> queTransac = new LinkedList<>();
+        Stack<String[]> withdrawFail = new Stack<>();
+
         Scanner kml = new Scanner(Main.class.getResourceAsStream("transaction.txt"));
 
-            LinkedList<String[]> transactions = new LinkedList<>();
-            LinkedList<String[]> customerRecords = new LinkedList<>();
-            Queue<String[]> qTransac = new LinkedList<>();
-            Stack<String[]> withdrawFail = new Stack<>();
+        while (kml.hasNextLine()) {
+            String[] transaction = new String[3];
 
-            while (kml.hasNextLine()) {
-                String line = kml.nextLine();
-                String[] pisah = line.split(" ");
+            transaction[0] = kml.next();
+            transaction[1] = kml.next();
+            transaction[2] = kml.next();
 
-                boolean sudahAda = false;
-                for (String[] c : customerRecords) {
-                    if (c[0].equals(pisah[0])) {
-                        sudahAda = true;
-                    }
-                }
-                if (!sudahAda) {
-                    customerRecords.add(new String[]{pisah[0], "0"});
-                }
-
-                transactions.add(pisah);
-            }
+            transactions.add(transaction);
+        }
 
         kml.close();
 
-        for (String[] t : transactions) {
-            qTransac.add(t);
-        }
+        queTransac.addAll(transactions);
 
-            while (!qTransac.isEmpty()) {
-                String[] transaksi = qTransac.poll();
-                String nama = transaksi[0];
-                String tipe = transaksi[1];
-                int jumlah = Integer.parseInt(transaksi[2]);
+        while (!queTransac.isEmpty()) {
+            String[] transaction = queTransac.poll();
 
-                for (String[] customer : customerRecords) {
-                    if (customer[0].equals(nama)) {
-                        int saldo = Integer.parseInt(customer[1]);
+            String name = transaction[0];
+            String type = transaction[1];
+            int amount = Integer.parseInt(transaction[2]);
 
-                        if (tipe.equals("DEPOSIT")) {
-                            saldo = saldo + jumlah;
-                            customer[1] = String.valueOf(saldo);
-                        } else if (tipe.equals("WITHDRAW")) {
-                            if (jumlah > saldo) {
-                                withdrawFail.push(transaksi);
-                            } else {
-                                saldo = saldo - jumlah;
-                                customer[1] = String.valueOf(saldo);
-                            }
-                        }
-                    }
+            String[] customer = null;
+
+            for (String[] data : customerRecords) {
+                if (data[0].equals(name)) {
+                    customer = data;
+                    break;
                 }
             }
+
+            if (customer == null) {
+                customer = new String[]{name, "0"};
+                customerRecords.add(customer);
+            }
+
+            int balance = Integer.parseInt(customer[1]);
+
+            if (type.equals("DEPOSIT")) {
+                balance += amount;
+                customer[1] = String.valueOf(balance);
+
+            } else {
+                if (amount > balance) {
+                    withdrawFail.push(transaction);
+                } else {
+                    balance -= amount;
+                    customer[1] = String.valueOf(balance);
+                }
+            }
+        }
 
         System.out.println("=== Final Balances ===");
 
@@ -71,8 +75,13 @@ public class Main {
         System.out.println("=== Failed Transactions ===");
 
         while (!withdrawFail.isEmpty()) {
-            String[] gagal = withdrawFail.pop();
-            System.out.println(gagal[0] + " " + gagal[1] + " " + gagal[2]);
+            String[] transaction = withdrawFail.pop();
+
+            System.out.println(
+                    transaction[0] + " " +
+                    transaction[1] + " " +
+                    transaction[2]
+            );
         }
     }
 }
